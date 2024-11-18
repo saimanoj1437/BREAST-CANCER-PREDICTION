@@ -94,5 +94,8 @@ if st.button("🔍 Predict"):
             """,
             unsafe_allow_html=True,
         )
-markdown("PROJECT BY : M.MANOJ BHASKAR")
+# Footer
+st.markdown(
+    '<div class="footer">Project by: M. Manoj Bhaskar</div>',
+    unsafe_allow_html=True,
 
