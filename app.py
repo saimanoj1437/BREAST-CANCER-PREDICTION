@@ -79,21 +79,27 @@ input_df = user_input_features()
 scaled_input = sc.transform(input_df)
 
 # Create a button to trigger prediction
+# Create a button to trigger prediction
 if st.button("🔍 Predict"):
-    prediction = loaded_model.predict(scaled_input)
-    if prediction[0] == 0:
+    if input_df.sum(axis=1).iloc[0] == 0:  # Check if all input values are 0
         st.success("✅ YOU ARE NOT AFFECTED BY BREAST CANCER")
         st.balloons()
     else:
-        st.error("⚠️ YOU ARE AFFECTED BY BREAST CANCER")
-        st.markdown(
-            """
-            <div style="text-align: center; font-size: 16px; color: red;">
-                Consult a doctor immediately. Stay strong 💪.
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+        prediction = loaded_model.predict(scaled_input)
+        if prediction[0] == 0:
+            st.success("✅ YOU ARE NOT AFFECTED BY BREAST CANCER")
+            st.balloons()
+        else:
+            st.error("⚠️ YOU ARE AFFECTED BY BREAST CANCER")
+            st.markdown(
+                """
+                <div style="text-align: center; font-size: 16px; color: red;">
+                    Consult a doctor immediately. Stay strong 💪.
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
 # Footer
 st.markdown(
     '<div class="footer">Project by: M. Manoj Bhaskar</div>',
