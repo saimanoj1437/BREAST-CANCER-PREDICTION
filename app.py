@@ -3,42 +3,74 @@ import pandas as pd
 import pickle
 import streamlit as st
 
-# Set page configuration
-st.set_page_config(page_title="Breast Cancer Prediction")
+st.set_page_config(
+    page_title="Breast Cancer Prediction",
+    page_icon="🩺",
+    layout="centered",
+    initial_sidebar_state="expanded",
+)
 
 # Load the model and scaler
 loaded_model = pickle.load(open('breastcancer.pkl', 'rb'))
 sc = pickle.load(open('sc.pkl', 'rb'))
 
-# Title and Description
-st.title('Breast Cancer Prediction')
-st.write(
-    "This model predicts whether a patient is affected by breast cancer based on certain input features.\n\n"
-    "The model was trained with high accuracy, but please note that this should not be used as a medical diagnosis. "
-    "Consult a medical professional for any health concerns."
+
+# Page title and description
+st.title("🩺 Breast Cancer Prediction")
+st.markdown(
+    """
+    <div style="text-align: center; font-size: 18px; color: #555;">
+        This model predicts whether a patient is affected by breast cancer based on certain input features.<br>
+        <b>Note:</b> This is not a medical diagnosis tool. Always consult a medical professional for health concerns.
+    </div>
+    """,
+    unsafe_allow_html=True,
 )
 
-# Get user input
+# Sidebar with additional information
+with st.sidebar:
+    st.markdown(
+        """
+        ### Dataset Features:
+        - **mean_radius**: Average radius of the tumor.
+        - **mean_texture**: Average texture of the tumor.
+        - **mean_perimeter**: Average perimeter of the tumor.
+        - **mean_area**: Average area of the tumor.
+        - **mean_smoothness**: Average smoothness of the tumor.
+        """,
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        "<hr style='border: 1px solid #ddd;'>",
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        """
+        <div style="text-align: center;">
+            <b>Project by:</b> <br>
+            <span style="font-size: 16px;">M. Manoj Bhaskar</span>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+# User input function
 def user_input_features():
-    mean_radius = st.slider("Enter Mean Radius", min_value=0.0, step=0.01)
-    mean_texture = st.slider('Enter Mean Texture', min_value=0.0, step=0.01)
-    mean_perimeter = st.slider('Enter Mean Perimeter', min_value=0.0, step=0.01)
-    mean_area = st.slider('Enter Mean Area', min_value=0.0, step=1.0)
-    mean_smoothness = st.slider('Enter Mean Smoothness', min_value=0.0, step=0.0001)
+    st.markdown("<h3 style='text-align: center; color: #333;'>Enter Patient Details</h3>", unsafe_allow_html=True)
+    mean_radius = st.number_input("Mean Radius", min_value=0.0, step=0.01, value=0.0)
+    mean_texture = st.number_input("Mean Texture", min_value=0.0, step=0.01, value=0.0)
+    mean_perimeter = st.number_input("Mean Perimeter", min_value=0.0, step=0.01, value=0.0)
+    mean_area = st.number_input("Mean Area", min_value=0.0, step=1.0, value=0.0)
+    mean_smoothness = st.number_input("Mean Smoothness", min_value=0.0, step=0.0001, value=0.0)
 
     data = {
-        'mean_radius': mean_radius,
-        'mean_texture': mean_texture,
-        'mean_perimeter': mean_perimeter,
-        'mean_area': mean_area,
-        'mean_smoothness': mean_smoothness
-
-
-    
+        "mean_radius": mean_radius,
+        "mean_texture": mean_texture,
+        "mean_perimeter": mean_perimeter,
+        "mean_area": mean_area,
+        "mean_smoothness": mean_smoothness,
     }
-
-    input_df = pd.DataFrame(data, index=[0])
-    return input_df
+    return pd.DataFrame(data, index=[0])
 
 # Get user input
 input_df = user_input_features()
@@ -47,27 +79,20 @@ input_df = user_input_features()
 scaled_input = sc.transform(input_df)
 
 # Create a button to trigger prediction
-if st.button('Predict'):
+if st.button("🔍 Predict"):
     prediction = loaded_model.predict(scaled_input)
-
     if prediction[0] == 0:
-        st.write("YOU ARE NOT AFFECTED BY BREAST CANCER")
+        st.success("✅ YOU ARE NOT AFFECTED BY BREAST CANCER")
+        st.balloons()
     else:
-        st.write("YOU ARE AFFECTED BY BREAST CANCER")
-        st.write("Consult the Doctor! Be Strong 💪")
-
-
-
-
-st.sidebar.markdown(
-    "Dataset Features\n\n"
-    "- **mean_radius**: The average radius of the tumor.\n"
-    "- **mean_texture**: The average texture of the tumor.\n"
-    "- **mean_perimeter**: The average perimeter of the tumor.\n"
-    "- **mean_area**: The average area of the tumor.\n"
-    "- **mean_smoothness**: The average smoothness of the tumor."
-)
-
-
-st.markdown("PROJECT BY : M.MANOJ BHASKAR")
+        st.error("⚠️ YOU ARE AFFECTED BY BREAST CANCER")
+        st.markdown(
+            """
+            <div style="text-align: center; font-size: 16px; color: red;">
+                Consult a doctor immediately. Stay strong 💪.
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+markdown("PROJECT BY : M.MANOJ BHASKAR")
 
