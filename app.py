@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,7 +19,7 @@
 </head>
 <body class="p-4">
     <div class="container" style="max-width: 700px;">
-        <h4>Presenting the Use Case</h4>
+        
         <form id="testimonialForm" class="mb-4">
             <div class="form-group row">
                 <label for="name" class="col-sm-2 col-form-label font-weight-bold">Name</label>
@@ -50,14 +49,22 @@
         let editIndex = null;
 
         function renderTestimonials() {
+
             const container = document.getElementById('testimonials');
+
             container.innerHTML = '';
+
             testimonials.forEach((item, index) => {
+
                 container.innerHTML += `
                     <div class="testimonial-box">
+
                         <strong>${item.name}</strong>
+
                         <p>${item.message}</p>
+
                         <button class="btn btn-custom btn-sm mr-2" onclick="editTestimonial(${index})">Edit</button>
+                        
                         <button class="btn btn-danger btn-sm" onclick="deleteTestimonial(${index})">Delete</button>
                     </div>
                 `;
@@ -65,13 +72,29 @@
         }
 
         document.getElementById('testimonialForm').addEventListener('submit', function(e) {
+
+
+
             e.preventDefault();
+
+
+
             const name = document.getElementById('name').value.trim();
+
+
             const message = document.getElementById('message').value.trim();
+
+
+
             if (editIndex === null) {
+
                 testimonials.push({ name, message });
+
+
             } else {
+
                 testimonials[editIndex] = { name, message };
+
                 editIndex = null;
                 document.getElementById('submitBtn').textContent = 'Submit';
             }
@@ -80,24 +103,38 @@
         });
 
         window.editTestimonial = function(index) {
+
+
             document.getElementById('name').value = testimonials[index].name;
+
+
             document.getElementById('message').value = testimonials[index].message;
+
+
             editIndex = index;
+
             document.getElementById('submitBtn').textContent = 'Update';
+
             document.getElementById('name').focus();
         };
 
         window.deleteTestimonial = function(index) {
+
             testimonials.splice(index, 1);
+
             if (editIndex === index) {
+
                 editIndex = null;
+
                 document.getElementById('testimonialForm').reset();
+
                 document.getElementById('submitBtn').textContent = 'Submit';
+
             }
             renderTestimonials();
         };
 
-        // Initial render
+       
         renderTestimonials();
     </script>
 </body>
