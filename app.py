@@ -1,485 +1,313 @@
-<!DOCTYPE html>
-<html lang="en">
+src/common/Header/Navbar.jsx
 
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Maker Dashboard</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
+jsx
+import React, { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 
-        body {
-            background: #f5f7fb;
-            color: #333;
-            display: flex;
-            min-height: 100vh;
-        }
+const NavItem = ({ to, children, active }) => {
+    const [hover, setHover] = useState(false);
+    return (
+        <Link
+            to={to}
+            className={`nav-item${active ? " active" : ""}`}
+            onMouseEnter={() => setHover(true)}
+            onMouseLeave={() => setHover(false)}
+        >
+            <span>{children}</span>
+        </Link>
+    );
+};
 
-        /* =================== Sidebar =================== */
-        .sidebar {
-            width: 220px;
-            background: #fff;
-            padding: 20px;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100%;
-            z-index: 200;
-        }
-
-        .sidebar .logo {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .sidebar .logo img {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .sidebar nav a {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            text-decoration: none;
-            color: #333;
-            padding: 10px 15px;
-            border-radius: 6px;
-            margin-bottom: 10px;
-            transition: 0.3s;
-        }
-
-        .sidebar nav a.active,
-        .sidebar nav a:hover {
-            background: #07b132;
-            color: #fff;
-        }
-
-        .sidebar nav .badge {
-            background: red;
-            color: #fff;
-            font-size: 12px;
-            padding: 2px 6px;
-            border-radius: 12px;
-        }
-
-        /* =================== Content Wrapper =================== */
-        .content-wrapper {
-            margin-left: 220px;
-            width: calc(100% - 220px);
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background: #f5f7fb;
-        }
-
-        /* Navbar */
-        .navbar {
-            background: #fff;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            padding: 12px 40px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-left: 1px solid transparent;
-        }
-
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .notif {
-            position: relative;
-            font-size: 1.3rem;
-            color: #0078d7;
-            cursor: pointer;
-        }
-
-        .notif-badge {
-            position: absolute;
-            top: -6px;
-            right: -8px;
-            background: red;
-            color: white;
-            font-size: 10px;
-            border-radius: 50%;
-            padding: 2px 5px;
-        }
-
-        .profile {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .profile img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #ccc;
-        }
-
-        .user-details h4 {
-            font-size: 14px;
-        }
-
-        .user-details p {
-            font-size: 12px;
-            color: #777;
-        }
-
-        /* Banner */
-        .banner {
-            background: url("https://sustainability-news.net/wp-content/uploads/2024/08/SC-head-office-2022-scaled-1.jpg") no-repeat center center;
-            background-size: cover;
-            height: 30vh;
-            position: relative;
-        }
-
-        /* Floating Cards */
-        .stats-cards {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: -50px;
-            position: relative;
-            z-index: 10;
-        }
-
-        .card {
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            text-align: center;
-            width: 250px;
-        }
-
-        .card h3 {
-            font-size: 14px;
-            color: #555;
-        }
-
-        .count {
-            font-size: 22px;
-            font-weight: 700;
-            margin: 6px 0;
-        }
-
-        .success {
-            color: #1e7c4c;
-        }
-
-        .warning {
-            border-left: 4px solid #e97724;
-        }
-
-        .success-card {
-            border-left: 4px solid #1e7c4c;
-        }
-
-        .danger {
-            border-left: 4px solid #e34242;
-        }
-
-        /* Main Content */
-        .main {
-            padding: 40px 60px;
-        }
-
-        .applications {
-            background: #fff;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .section-header h2 {
-            font-size: 18px;
-            color: #0078d7;
-        }
-
-        .section-header p {
-            font-size: 13px;
-            color: #888;
-        }
-
-        /* Filters */
-        .filters {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 16px 20px;
-            background: #fff;
-            justify-content: space-between;
-            border-bottom: 1px solid #e5e7eb;
-            margin-top: 10px;
-            border-radius: 8px;
-        }
-
-        .filters input {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            outline: none;
-        }
-
-        .filters select {
-            padding: 10px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            outline: none;
-        }
-
-        .filter-btn {
-            background: #2563eb;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .filter-btn:hover {
-            background: black;
-            color: white;
-        }
-
-        /* Table */
-        .app-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        .app-table th,
-        .app-table td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #eee;
-            font-size: 14px;
-        }
-
-        .tag {
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            color: white;
-        }
-
-        .blue {
-            background: #3b82f6;
-        }
-
-        .green {
-            background: #16a34a;
-        }
-
-        .purple {
-            background: #8b5cf6;
-        }
-
-        .status {
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            color: white;
-        }
-
-        .pending {
-            background: #facc15;
-            color: #333;
-        }
-
-        .approved {
-            background: #16a34a;
-        }
-
-        .rejected {
-            background: #e34242;
-        }
-
-        /* Pagination Buttons */
-        .pagination {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .pagination button {
-            padding: 6px 12px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            background: #f0f2f5;
-            transition: 0.3s;
-        }
-
-        .pagination button:hover {
-            background: #0078d7;
-            color: white;
-        }
-    </style>
-</head>
-
-<body>
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="logo">
-            <img src="SC.jpg" alt="Logo" class="logo-img">
-        </div>
-        <nav class="nav">
-            <a class="active" href="#">Dashboard</a>
-            <a href="#">Applications <span class="badge">12</span></a>
-            <a href="#">Approved</a>
-            <a href="#">Rejected</a>
-            <a href="#">Pending</a>
-            <a href="#">Reports</a>
-            <a href="#">Settings</a>
-        </nav>
-    </aside>
-
-    <!-- Content Wrapper -->
-    <div class="content-wrapper">
-        <!-- Top Navbar (logo removed) -->
-        <nav class="navbar">
-            <div class="nav-right">
-                <div class="notif">
-                    <i class="fa-solid fa-bell"></i>
-                    <span class="notif-badge">3</span>
+const Navbar = () => {
+    const location = useLocation();
+    return (
+        <nav className="fixed-navbar navbar">
+            <div className="navbar-logo-section">
+                <div className="logo-circle">SCB</div>
+            </div>
+            <div className="nav-middle">
+                <NavItem to="/" active={location.pathname === "/"}>Dashboard</NavItem>
+                <NavItem to="/approved" active={location.pathname === "/approved"}>Approved</NavItem>
+                <NavItem to="/rejected" active={location.pathname === "/rejected"}>Rejected</NavItem>
+                <NavItem to="/pending" active={location.pathname === "/pending"}>Pending</NavItem>
+            </div>
+            <div className="nav-end">
+                <div className="nav-notify">
+                    <i className="fa-solid fa-bell"></i>
+                    <span className="nav-notify-count">3</span>
                 </div>
-                <div class="profile">
-                    <img src="" alt="user" />
-                    <div class="user-details">
-                        <h4>Account Settings</h4>
-                        <p>Loan Officer</p>
-                    </div>
+                <img
+                    src="https://ui-avatars.com/api/?name=User"
+                    alt="user"
+                    className="nav-user-avatar"
+                />
+                <div>
+                    <h4 className="nav-account-title">Account Settings</h4>
+                    <p className="nav-account-role">Loan Officer</p>
                 </div>
             </div>
         </nav>
+    );
+};
 
-        <!-- Banner -->
-        <section class="banner"></section>
+export default Navbar;
+src/common/Footer/Footer.jsx
 
-        <!-- Stats Cards -->
-        <section class="stats-cards">
-            <div class="card">
-                <h3>Total Applications</h3>
-                <p class="count">24</p>
-                <span class="success">↑ 12% from last month</span>
-            </div>
-            <div class="card warning">
-                <h3>Pending Review</h3>
-                <p class="count">8</p>
-                <span class="alert">⚠ Requires attention</span>
-            </div>
-            <div class="card success-card">
-                <h3>Approved Today</h3>
-                <p class="count">6</p>
-                <span class="success">✅ Great progress!</span>
-            </div>
-            <div class="card danger">
-                <h3>Rejected</h3>
-                <p class="count">2</p>
-                <span class="alert">❌ This month</span>
-            </div>
-        </section>
+jsx
+import React from "react";
 
-        <!-- Main -->
-        <main class="main">
-            <section class="applications">
-                <div class="section-header">
-                    <h2>Recent Applications</h2>
-                    <p>Review and process loan applications</p>
-                </div>
+const Footer = () => (
+    <footer className="fixed-footer">
+        © 2025 Your Company Name
+    </footer>
+);
 
-                <div class="filters">
-                    <input type="text" placeholder="Search by customer name, loan type, or application ID" />
-                    <select>
-                        <option>All Loan Types</option>
-                        <option>Personal Loan</option>
-                        <option>Home Loan</option>
-                        <option>Vehicle Loan</option>
-                    </select>
-                    <select>
-                        <option>All Statuses</option>
-                        <option>Verified</option>
-                        <option>Pending Docs</option>
-                    </select>
-                    <button class="filter-btn">Filter</button>
-                </div>
+export default Footer;
+src/common/Filters/Filters.jsx
 
-                <table class="app-table">
-                    <thead>
-                        <tr>
-                            <th>Applicant</th>
-                            <th>Loan Type</th>
-                            <th>Amount</th>
-                            <th>Status</th>
-                            <th>Applied Date</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr data-status="pending">
-                            <td>Sarah Johnson<br><span>sarah.j@email.com</span></td>
-                            <td><span class="tag blue">Home Loan</span></td>
-                            <td>₹25,00,000</td>
-                            <td><span class="status pending">Pending Review</span></td>
-                            <td>Dec 15, 2024</td>
-                            <td><a href="#">Open</a></td>
-                        </tr>
-                        <tr data-status="approved">
-                            <td>Michael Chen<br><span>m.chen@email.com</span></td>
-                            <td><span class="tag green">Personal Loan</span></td>
-                            <td>₹5,00,000</td>
-                            <td><span class="status approved">Approved</span></td>
-                            <td>Dec 14, 2024</td>
-                            <td><a href="#">Open</a></td>
-                        </tr>
-                        <tr data-status="pending">
-                            <td>David Wilson<br><span>d.wilson@email.com</span></td>
-                            <td><span class="tag purple">Vehicle Loan</span></td>
-                            <td>₹8,50,000</td>
-                            <td><span class="status pending">Pending Review</span></td>
-                            <td>Dec 13, 2024</td>
-                            <td><a href="#">Open</a></td>
-                        </tr>
-                        <tr data-status="rejected">
-                            <td>Emma Brown<br><span>e.brown@email.com</span></td>
-                            <td><span class="tag blue">Home Loan</span></td>
-                            <td>₹12,00,000</td>
-                            <td><span class="status rejected">Rejected</span></td>
-                            <td>Dec 12, 2024</td>
-                            <td><a href="#">Open</a></td>
-                        </tr>
-                    </tbody>
-                </table>
+jsx
+import React from "react";
 
-                <div class="pagination">
-                    <button id="prev-btn">Previous</button>
-                    <button id="next-btn">Next</button>
-                </div>
-            </section>
-        </main>
+const Filters = () => (
+    <div className="filters-bar">
+        <input
+            className="filters-bar-input"
+            placeholder="Search by name, loan type, or application ID"
+        />
+        <select className="filters-bar-select">
+            <option>All Loan Types</option>
+            <option>Personal Loan</option>
+            <option>Home Loan</option>
+            <option>Vehicle Loan</option>
+        </select>
+        <select className="filters-bar-select">
+            <option>All Statuses</option>
+            <option>Verified</option>
+            <option>Pending Docs</option>
+        </select>
+        <button className="filters-bar-button">Filter</button>
     </div>
-</body>
+);
 
-</html>oi
+export default Filters;
+src/common/ApplicationsTable/ApplicationsTable.jsx
+
+jsx
+import React from "react";
+
+const getAppsData = (filter) => {
+    const data = [
+        { name: "Sarah Johnson", email: "sarah@email.com", loanType: "Home", amount: "₹25,00,000", status: "Pending", appliedDate: "Dec 15, 2024" },
+        { name: "Michael Chen", email: "m.chen@email.com", loanType: "Personal", amount: "₹5,00,000", status: "Approved", appliedDate: "Dec 14, 2024" },
+        { name: "David Wilson", email: "d.wilson@email.com", loanType: "Vehicle", amount: "₹8,50,000", status: "Pending", appliedDate: "Dec 13, 2024" },
+        { name: "Emma Brown", email: "e.brown@email.com", loanType: "Home", amount: "₹12,00,000", status: "Rejected", appliedDate: "Dec 12, 2024" }
+    ];
+    if (!filter) return data;
+    return data.filter(row => row.status.toLowerCase() === filter.toLowerCase());
+};
+
+const loanTypeClass = {
+    Home: "loan-badge-home",
+    Personal: "loan-badge-personal",
+    Vehicle: "loan-badge-vehicle"
+};
+
+const ApplicationsTable = ({ filter }) => {
+    const rows = getAppsData(filter);
+    return (
+        <div className="dash-table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Applicant</th>
+                        <th>Loan Type</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Applied Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {rows.length === 0 ? (
+                        <tr>
+                            <td colSpan={6} className="table-empty">No applications.</td>
+                        </tr>
+                    ) : rows.map(({ name, email, loanType, amount, status, appliedDate }, idx) => (
+                        <tr key={idx}>
+                            <td>
+                                {name}<br />
+                                <span className="table-applicant-email">{email}</span>
+                            </td>
+                            <td>
+                                <span className={`loan-type ${loanTypeClass[loanType] || ""}`}>
+                                    {loanType}
+                                </span>
+                            </td>
+                            <td>{amount}</td>
+                            <td className={
+                                status === "Approved" ? "status-approved"
+                                : status === "Rejected" ? "status-rejected"
+                                : status === "Pending" ? "status-pending"
+                                : ""
+                            }>{status}</td>
+                            <td>{appliedDate}</td>
+                            <td>
+                                <a href="#" className="table-link">Open</a>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+            <div className="table-pagination">
+                <button>Previous</button>
+                <button>Next</button>
+            </div>
+        </div>
+    );
+};
+
+export default ApplicationsTable;
+src/pages/Dashboard/AdminDashboard.jsx
+
+jsx
+import React from "react";
+import Filters from "../../common/Filters/Filters";
+import ApplicationsTable from "../../common/ApplicationsTable/ApplicationsTable";
+const bannerImg = "https://sustainability-news.net/wp-content/uploads/2024/08/SC-head-office-2022-scaled-1.jpg";
+
+const StatsCards = () => (
+    <div className="stats-cards">
+        <div className="stats-card">
+            <div className="stats-title">Total Applications</div>
+            <div className="stats-value">24</div>
+            <span className="stats-growth">↑ 12% from last month</span>
+        </div>
+        <div className="stats-card border-orange">
+            <div className="stats-title">Pending Review</div>
+            <div className="stats-value">8</div>
+            <span className="stats-attention">⚠ Requires attention</span>
+        </div>
+        <div className="stats-card border-green">
+            <div className="stats-title">Approved Today</div>
+            <div className="stats-value">6</div>
+            <span className="stats-progress">✅ Great progress!</span>
+        </div>
+        <div className="stats-card border-red">
+            <div className="stats-title">Rejected</div>
+            <div className="stats-value">2</div>
+            <span className="stats-rejected">❌ This month</span>
+        </div>
+    </div>
+);
+
+const AdminDashboard = () => (
+    <div>
+        <section className="banner-section" style={{ backgroundImage: `url(${bannerImg})` }} />
+        <StatsCards />
+        <div className="dashboard-section">
+            <h2 className="dashboard-title">Recent Applications</h2>
+            <p className="dashboard-desc">Review and process loan applications</p>
+            <Filters />
+        </div>
+        <ApplicationsTable />
+    </div>
+);
+
+export default AdminDashboard;
+src/pages/Dashboard/Approved.jsx
+
+jsx
+import React from "react";
+import Filters from "../../common/Filters/Filters";
+import ApplicationsTable from "../../common/ApplicationsTable/ApplicationsTable";
+
+const Approved = () => (
+    <div>
+        <div className="dashboard-section">
+            <h2 className="dashboard-title">Approved Applications</h2>
+            <p className="dashboard-desc">These applications have been approved.</p>
+            <Filters />
+        </div>
+        <ApplicationsTable filter="Approved"/>
+    </div>
+);
+
+export default Approved;
+src/pages/Dashboard/Rejected.jsx
+
+jsx
+import React from "react";
+import Filters from "../../common/Filters/Filters";
+import ApplicationsTable from "../../common/ApplicationsTable/ApplicationsTable";
+
+const Rejected = () => (
+    <div>
+        <div className="dashboard-section">
+            <h2 className="dashboard-title">Rejected Applications</h2>
+            <p className="dashboard-desc">These applications have been rejected.</p>
+            <Filters />
+        </div>
+        <ApplicationsTable filter="Rejected"/>
+    </div>
+);
+
+export default Rejected;
+src/pages/Dashboard/Pending.jsx
+
+jsx
+import React from "react";
+import Filters from "../../common/Filters/Filters";
+import ApplicationsTable from "../../common/ApplicationsTable/ApplicationsTable";
+
+const Pending = () => (
+    <div>
+        <div className="dashboard-section">
+            <h2 className="dashboard-title">Pending Applications</h2>
+            <p className="dashboard-desc">These applications are waiting for review.</p>
+            <Filters />
+        </div>
+        <ApplicationsTable filter="Pending"/>
+    </div>
+);
+
+export default Pending;
+src/App.jsx
+
+jsx
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Navbar from "./common/Header/Navbar";
+import Footer from "./common/Footer/Footer";
+import AdminDashboard from "./pages/Dashboard/AdminDashboard";
+import Approved from "./pages/Dashboard/Approved";
+import Rejected from "./pages/Dashboard/Rejected";
+import Pending from "./pages/Dashboard/Pending";
+
+const App = () => (
+    <Router>
+        <Navbar />
+        <main className="main-content">
+            <Routes>
+                <Route path="/" element={<AdminDashboard />} />
+                <Route path="/approved" element={<Approved />} />
+                <Route path="/rejected" element={<Rejected />} />
+                <Route path="/pending" element={<Pending />} />
+            </Routes>
+        </main>
+        <Footer />
+    </Router>
+);
+
+export default App;
+src/index.js
+
+js
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import "./assets/styles/App.css";
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<App />);
+Place all CSS rules in App.css, and only reference classes in your JSX—as shown here.
+Let me know if you need example CSS class definitions as well!
